@@ -1,6 +1,6 @@
 {
   "name": "@2bad/bitrix",
-  "version": "3.0.0-beta.0",
+  "version": "2.5.1",
   "description": "Bitrix24 REST API client that doesn't suck",
   "keywords": [
     "api",
@@ -23,27 +23,24 @@
   },
   "license": "MIT",
   "author": "2BAD (https://github.com/2BAD)",
-  "type": "module",
-  "exports": "./build/bitrix.js",
-  "typings": "./build/bitrix.d.ts",
+  "main": "build/main/bitrix.js",
+  "module": "build/module/bitrix.js",
+  "typings": "build/main/bitrix.d.ts",
   "files": [
     "build"
   ],
   "scripts": {
-    "prebuild": "rimraf build",
-    "build": "run-p build:*",
-    "postbuild": "run-s fix:alias",
-    "build:swc": "swc ./source -d ./build --strip-leading-paths",
-    "build:types": "tsc --project tsconfig.build.json",
-    "check": "run-p check:*",
-    "check:code": "eslint . --ext .ts --report-unused-disable-directives --max-warnings 0",
-    "fix:alias": "tsc-alias -p tsconfig.build.json",
-    "fix:code": "run-s 'check:code -- --fix'",
-    "prepublishOnly": "run-s build",
-    "preversion": "run-s check test:unit build",
-    "test": "vitest run",
-    "test:integration": "vitest run integration --coverage",
-    "test:unit": "vitest run unit --coverage"
+    "build": "run-s clean && run-p build:*",
+    "build:main": "tsc --project tsconfig.main.json",
+    "build:module": "tsc --project tsconfig.json",
+    "clean": "rimraf build",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "run-s \"lint -- --fix\"",
+    "prepublishOnly": "run-s clean build",
+    "test": "jest --coverage",
+    "test:integration": "jest integration --coverage",
+    "test:unit": "jest unit --coverage",
+    "preversion": "run-s clean lint test:unit build"
   },
   "prettier": {
     "printWidth": 100,
@@ -51,46 +48,56 @@
     "singleQuote": true,
     "trailingComma": "none"
   },
+  "jest": {
+    "collectCoverageFrom": [
+      "source/**/*.ts"
+    ],
+    "coverageDirectory": "coverage",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/build/"
+    ],
+    "preset": "ts-jest",
+    "setupFiles": [
+      "dotenv/config"
+    ],
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/?(*.)+(spec|test).[jt]s?(x)"
+    ]
+  },
   "dependencies": {
-    "@types/lodash.chunk": "4.2.9",
-    "@types/lodash.frompairs": "4.0.9",
-    "@types/lodash.range": "3.2.9",
-    "@types/qs": "6.9.15",
-    "got": "14.4.1",
+    "@types/lodash.chunk": "4.2.7",
+    "@types/lodash.frompairs": "4.0.7",
+    "@types/lodash.range": "3.2.7",
+    "@types/qs": "6.9.7",
+    "got": "11.8.2",
     "lodash.chunk": "4.2.0",
     "lodash.frompairs": "4.0.1",
     "lodash.range": "3.2.0",
-    "p-queue": "8.0.1",
-    "qs": "6.12.3"
+    "p-queue": "6.6.2",
+    "qs": "6.11.0"
   },
   "devDependencies": {
-    "@2bad/tsconfig": "3.0.1",
-    "@swc/cli": "0.4.0",
-    "@swc/core": "1.7.0",
-    "@types/node": "20.14.11",
+    "@2bad/tsconfig": "1.4.0",
+    "@types/jest": "26.0.23",
+    "@types/node": "18.11.2",
     "@typescript-eslint/eslint-plugin": "4.22.0",
-    "@vitest/coverage-v8": "2.0.3",
-    "dotenv": "16.4.5",
+    "codecov": "3.8.2",
+    "dotenv": "16.0.3",
     "eslint": "7.25.0",
     "eslint-config-standard-with-typescript": "20.0.0",
     "eslint-plugin-import": "2.22.1",
-    "eslint-plugin-n": "14.0.0",
+    "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "4.2.1",
     "eslint-plugin-standard": "4.1.0",
-    "nock": "13.5.4",
-    "npm-run-all2": "6.2.2",
-    "rimraf": "6.0.1",
-    "tsc-alias": "1.8.10",
-    "typescript": "5.5.3",
-    "vite-tsconfig-paths": "4.3.2",
-    "vitest": "2.0.3"
-  },
-  "packageManager": "npm@10.8.2",
-  "engines": {
-    "node": ">=20"
+    "jest": "26.6.3",
+    "nock": "13.2.9",
+    "npm-run-all": "4.1.5",
+    "rimraf": "3.0.2",
+    "ts-jest": "26.5.5",
+    "typescript": "4.8.4"
   },
   "volta": {
-    "node": "22.4.1",
-    "npm": "10.8.2"
+    "node": "19.0.0"
   }
 }
